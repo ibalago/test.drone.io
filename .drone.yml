@@ -11,8 +11,8 @@ pipeline:
       # The <build_number> tag will be removed after the build
       # and the latest tag will stay as a cache.
       - docker build . --target development -t api-build:${DRONE_BUILD_NUMBER} -t api-build:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
 
   seed-db:
     image: "api-build:${DRONE_BUILD_NUMBER}"
@@ -31,8 +31,8 @@ pipeline:
   build:
     image: "api-build:${DRONE_BUILD_NUMBER}"
     group: parallel-1
-    volumes:
-      - composer-cache:/root/.composer
+#    volumes:
+#      - composer-cache:/root/.composer
     commands:
       # Install dependencies.
       - composer install --no-interaction --no-progress --no-suggest
@@ -51,8 +51,8 @@ pipeline:
   validate-swagger:
     image: "node:alpine"
     group: parallel-2
-    volumes:
-      - npm-cache:/root/.npm
+ #   volumes:
+ #     - npm-cache:/root/.npm
     commands:
       # Install swagger validator and validate swagger.json
       - "npm install -g swagger-cli"
@@ -89,8 +89,8 @@ pipeline:
     secrets:
       - source: sonar_token
         target: SONAR_TOKEN
-    volumes:
-      - sonar-cache:/root/.sonar/cache
+#    volumes:
+#      - sonar-cache:/root/.sonar/cache
     when:
       branch:
         - master
@@ -117,8 +117,8 @@ pipeline:
       # Publish both to the registry
       - docker push registry.(snip)/api:latest
       - docker push registry.(snip)/api-nginx:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
     when:
       branch:
         - master
@@ -130,8 +130,8 @@ pipeline:
     commands:
       # Delete the build image.
       - docker rmi api-build:${DRONE_BUILD_NUMBER}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
     when:
       status:
         - success
